@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LogIn, LogOut, ShieldCheck } from "lucide-react";
+import { LogIn, LogOut, ShieldCheck, MessageSquareText, Users } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 import ChatPanel from "@/components/ChatPanel";
 import Dashboard from "@/components/Dashboard";
+import StudentChats from "@/components/StudentChats";
 
 export default function AdminPage() {
   const [checking, setChecking] = useState(true);
@@ -13,6 +14,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [tab, setTab] = useState<"chat" | "alunos">("chat");
 
   useEffect(() => {
     supabaseBrowser.auth.getSession().then(({ data }) => {
@@ -86,8 +88,28 @@ export default function AdminPage() {
   return (
     <div className="h-screen flex flex-col">
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800 bg-zinc-950">
-        <div className="flex items-center gap-2 text-xs text-zinc-500">
-          <ShieldCheck size={13} className="text-amber-400" /> Painel administrativo
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-xs text-zinc-500 mr-3">
+            <ShieldCheck size={13} className="text-amber-400" /> Painel administrativo
+          </div>
+          <div className="flex gap-1 bg-zinc-900 rounded-lg p-0.5">
+            <button
+              onClick={() => setTab("chat")}
+              className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md transition-colors ${
+                tab === "chat" ? "bg-zinc-800 text-amber-300" : "text-zinc-500"
+              }`}
+            >
+              <MessageSquareText size={13} /> Chat
+            </button>
+            <button
+              onClick={() => setTab("alunos")}
+              className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md transition-colors ${
+                tab === "alunos" ? "bg-zinc-800 text-amber-300" : "text-zinc-500"
+              }`}
+            >
+              <Users size={13} /> Conversas dos alunos
+            </button>
+          </div>
         </div>
         <button onClick={logout} className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-rose-400 transition-colors">
           <LogOut size={13} /> Sair
@@ -95,23 +117,27 @@ export default function AdminPage() {
       </div>
       <div className="flex-1 flex min-h-0">
         <div className="flex-1 min-w-0">
-          <ChatPanel
-            mode="admin"
-            usuarioId={userId}
-            brand="José+ Admin"
-            emptyTitle="O que vamos organizar hoje?"
-            emptySubtitle="Fale naturalmente: registre gastos e recebimentos, marque provas e eventos, publique avisos ou envie uma foto da merenda."
-            chips={[
-              "Recebemos R$500 da rifa",
-              "Dia 20 terá prova de matemática",
-              "Amanhã não haverá aula",
-              "Quanto temos em caixa?"
-            ]}
-            apiEndpoint="/api/admin"
-            allowImage
-            getAuthHeaders={getAuthHeaders}
-            onDataChanged={() => setRefreshKey((k) => k + 1)}
-          />
+          {tab === "chat" ? (
+            <ChatPanel
+              mode="admin"
+              usuarioId={userId}
+              brand="José+ Admin"
+              emptyTitle="O que vamos organizar hoje?"
+              emptySubtitle="Fale naturalmente: registre gastos e recebimentos, marque provas e eventos, publique avisos ou envie uma foto da merenda."
+              chips={[
+                "Recebemos R$500 da rifa",
+                "Dia 20 terá prova de matemática",
+                "Amanhã não haverá aula",
+                "Quanto temos em caixa?"
+              ]}
+              apiEndpoint="/api/admin"
+              allowImage
+              getAuthHeaders={getAuthHeaders}
+              onDataChanged={() => setRefreshKey((k) => k + 1)}
+            />
+          ) : (
+            <StudentChats />
+          )}
         </div>
         <Dashboard refreshKey={refreshKey} />
       </div>
