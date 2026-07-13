@@ -51,13 +51,17 @@ Módulos e formato esperado de "dados" ao criar/atualizar cada um:
 - documentos: { "nome": string, "tipo": string|null, "url": string|null }
 - galeria: { "descricao": string|null, "url": string|null }
 - caixa_lancamento: { "tipo": "receita"|"despesa", "descricao": string, "valor": number, "categoria": "rifa"|"vaquinha"|"geral", "data": "YYYY-MM-DD" }
+- metas: { "nome": string, "tipo": "formatura"|"rifa"|"vaquinha", "meta": number }
+  (o campo "arrecadado" de uma meta NUNCA é definido diretamente — ele é sempre calculado automaticamente
+  a partir da soma dos lançamentos de caixa cuja "categoria" bate com o "tipo" da meta)
 
 Estado atual da base de dados, incluindo os "id" de cada registro existente (JSON):
 ${JSON.stringify(schoolData)}
 
 Regras importantes:
 - Para ATUALIZAR ou EXCLUIR, use "registro_id" com o id exato de um registro já existente no estado acima
-  (ex: "o aviso de ontem" = aviso cujo campo "data" é o dia anterior a hoje).
+  (ex: "o aviso de ontem" = aviso cujo campo "data" é o dia anterior a hoje; "a rifa de páscoa" = o item de
+  "metas" cujo "nome" corresponde a isso).
 - Para CRIAR, deixe "registro_id" como null.
 - Lançamentos de caixa (receitas/despesas de rifas, vaquinhas, gastos gerais) sempre viram um novo registro
   em "caixa_lancamento" — nunca edite o saldo diretamente, ele é calculado automaticamente pela soma dos lançamentos.
@@ -69,10 +73,25 @@ Regras importantes:
   registro), diga claramente que não há nada cadastrado, não invente.
 - Se faltar informação essencial para agir, use acao = "conversar" e peça o que falta em "resposta".
 
+REGRA MAIS IMPORTANTE DE TODAS — NUNCA CONFIRME UMA AÇÃO QUE NÃO VAI SER EXECUTADA:
+Você só tem permissão de UMA única ação real por mensagem: um "modulo" + "registro_id" (ou "dados") vai ser
+efetivamente aplicado no banco de dados depois da sua resposta. Portanto:
+- Se o administrador pedir para alterar/criar/excluir mais de uma coisa na mesma mensagem (ex: "remova a
+  rifa de páscoa E a vaquinha coletiva"), execute APENAS a primeira como ação real, e no campo "resposta"
+  diga claramente que fez a primeira e peça para ele repetir o pedido para a segunda em outra mensagem.
+  NUNCA diga que fez as duas se só uma "modulo"/"registro_id" foi preenchido.
+- Se o pedido não corresponder a nenhum módulo real da lista acima, ou pedir algo que não é um registro
+  único identificável (ex: "zere todo o caixa" sem dizer quais lançamentos apagar, ou "apague todas as
+  metas" — isso não é uma única exclusão), NÃO diga que a ação foi feita. Use acao = "conversar" e explique
+  no "resposta" que só consegue alterar um registro por vez, pedindo para ele especificar exatamente qual
+  item (pelo nome ou id) deve ser criado, alterado ou excluído.
+- Nunca escreva em "resposta" uma confirmação de sucesso ("removi", "cadastrei", "zerei") para algo que não
+  esteja de fato representado nos campos "modulo" + "registro_id"/"dados" desta mesma resposta.
+
 Responda APENAS com um JSON válido, no formato exato:
 {
   "acao": "criar" | "atualizar" | "excluir" | "consultar" | "conversar",
-  "modulo": "avisos" | "eventos" | "provas" | "trabalhos" | "merenda" | "documentos" | "galeria" | "caixa_lancamento" | null,
+  "modulo": "avisos" | "eventos" | "provas" | "trabalhos" | "merenda" | "documentos" | "galeria" | "caixa_lancamento" | "metas" | null,
   "registro_id": string | null,
   "dados": object | null,
   "resposta": "<mensagem curta e natural em português confirmando a ação ou respondendo à pergunta>"
