@@ -86,6 +86,9 @@ export default function ChatPanel({
 
   useEffect(() => {
     loadConversas();
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setCollapsed(true);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -223,12 +226,19 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full relative">
+      {/* backdrop (mobile only) */}
+      {!collapsed && (
+        <div
+          className="fixed inset-0 bg-black/60 z-30 md:hidden"
+          onClick={() => setCollapsed(true)}
+        />
+      )}
+
       {/* sidebar */}
       <div
-        className={`${
-          collapsed ? "w-0" : "w-72"
-        } shrink-0 transition-all duration-300 overflow-hidden border-r border-zinc-800 bg-zinc-950 flex flex-col h-full`}
+        className={`${collapsed ? "hidden" : "flex"} md:flex fixed md:static inset-y-0 left-0 z-40
+        w-72 shrink-0 overflow-hidden border-r border-zinc-800 bg-zinc-950 flex-col h-full`}
       >
         <div className="p-3 flex items-center justify-between">
           <div className="flex items-center gap-2 px-1">
