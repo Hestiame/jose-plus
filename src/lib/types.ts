@@ -36,6 +36,7 @@ export type AdminAction = {
     | "documentos"
     | "galeria"
     | "caixa_lancamento"
+    | "metas"
     | null;
   registro_id: string | null; // id existente, quando for atualizar/excluir
   dados: Record<string, unknown> | null; // campos do registro a criar/atualizar
