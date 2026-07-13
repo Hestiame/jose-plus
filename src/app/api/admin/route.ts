@@ -12,7 +12,8 @@ const TABLE_BY_MODULO: Record<string, string> = {
   merenda: "merenda",
   documentos: "documentos",
   galeria: "galeria",
-  caixa_lancamento: "caixa_lancamentos"
+  caixa_lancamento: "caixa_lancamentos",
+  metas: "metas"
 };
 
 function stripJsonFence(text: string) {
