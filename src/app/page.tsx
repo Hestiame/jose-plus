@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 import ChatPanel from "@/components/ChatPanel";
 import { getAnonId } from "@/lib/anonId";
 
@@ -32,12 +30,6 @@ export default function PublicPage() {
           ]}
           apiEndpoint="/api/chat"
         />
-        <Link
-          href="/admin"
-          className="absolute bottom-3 right-3 flex items-center gap-1.5 text-[11px] text-zinc-600 hover:text-amber-400 transition-colors bg-zinc-950/80 backdrop-blur px-2.5 py-1.5 rounded-lg border border-zinc-800"
-        >
-          <ShieldCheck size={12} /> Administração
-        </Link>
       </div>
     </div>
   );
