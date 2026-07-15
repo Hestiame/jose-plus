@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchSchoolData } from "@/lib/supabaseServer";
 import { buildPublicSystem } from "@/lib/prompts";
-import { callGemini } from "@/lib/gemini";
+import { callAI } from "@/lib/aiProvider";
 import { ChatMessage } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
@@ -12,9 +12,9 @@ export async function POST(req: NextRequest) {
     }
 
     const schoolData = await fetchSchoolData();
-    const reply = await callGemini({ system: buildPublicSystem(schoolData), messages });
+    const { text } = await callAI({ system: buildPublicSystem(schoolData), messages });
 
-    return NextResponse.json({ reply: reply || "Não consegui responder agora, tenta de novo?" });
+    return NextResponse.json({ reply: text || "Não consegui responder agora, tenta de novo?" });
   } catch (err) {
     console.error("Erro no /api/chat:", err);
     return NextResponse.json(
