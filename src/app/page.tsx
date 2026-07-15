@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
+import InstallPrompt from "@/components/InstallPrompt";
 import { getAnonId } from "@/lib/anonId";
 
 export default function PublicPage() {
@@ -30,6 +31,7 @@ export default function PublicPage() {
           ]}
           apiEndpoint="/api/chat"
         />
+        <InstallPrompt />
       </div>
     </div>
   );
