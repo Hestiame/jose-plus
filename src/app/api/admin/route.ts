@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin, fetchSchoolData } from "@/lib/supabaseServer";
 import { buildAdminSystem } from "@/lib/prompts";
-import { callGemini } from "@/lib/gemini";
+import { callAI } from "@/lib/aiProvider";
 import { AdminAction, ChatMessage } from "@/lib/types";
 
 const TABLE_BY_MODULO: Record<string, string> = {
@@ -46,13 +46,16 @@ export async function POST(req: NextRequest) {
     }
 
     const schoolData = await fetchSchoolData();
-    const raw = await callGemini({
+    const { text: raw, provider } = await callAI({
       system: buildAdminSystem(schoolData),
       messages,
       imageBase64,
       imageMimeType,
       jsonMode: true
     });
+    if (provider === "groq") {
+      console.warn("Aviso: /api/admin respondeu usando a Groq (reserva), Gemini falhou.");
+    }
 
     let parsed: AdminAction;
     try {
