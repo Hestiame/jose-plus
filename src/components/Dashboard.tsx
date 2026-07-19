@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, FolderOpen, TrendingUp, TrendingDown, Target,
-  Megaphone, CalendarDays, ClipboardList, GraduationCap, UtensilsCrossed, Images
+  Megaphone, CalendarDays, ClipboardList, GraduationCap, UtensilsCrossed, Images, Users
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 
@@ -27,6 +27,7 @@ export default function Dashboard({ refreshKey }: { refreshKey: number }) {
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([]);
   const [metas, setMetas] = useState<Meta[]>([]);
   const [modulosData, setModulosData] = useState<Record<string, { id: string; [k: string]: unknown }[]>>({});
+  const [visitantes, setVisitantes] = useState<{ alunos: number; visitantes: number }>({ alunos: 0, visitantes: 0 });
 
   useEffect(() => {
     load();
@@ -47,6 +48,15 @@ export default function Dashboard({ refreshKey }: { refreshKey: number }) {
     const obj: Record<string, { id: string; [k: string]: unknown }[]> = {};
     MODULOS.forEach((m, i) => (obj[m.key] = results[i].data || []));
     setModulosData(obj);
+
+    try {
+      const { data: vis } = await supabaseBrowser.from("visitantes").select("tipo");
+      const alunos = (vis || []).filter((v) => v.tipo === "aluno").length;
+      const visitantesCount = (vis || []).filter((v) => v.tipo === "visitante").length;
+      setVisitantes({ alunos, visitantes: visitantesCount });
+    } catch {
+      // tabela ainda não migrada — sem problema, só não mostra a estatística
+    }
   }
 
   const totalReceitas = lancamentos.filter((l) => l.tipo === "receita").reduce((s, l) => s + Number(l.valor), 0);
@@ -83,6 +93,21 @@ export default function Dashboard({ refreshKey }: { refreshKey: number }) {
 
       {tab === "dashboard" ? (
         <div className="p-4 space-y-3">
+          {(visitantes.alunos > 0 || visitantes.visitantes > 0) && (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-3.5">
+              <div className="flex items-center gap-1.5 text-[11px] text-zinc-500 mb-2">
+                <Users size={12} /> Quem já acessou
+              </div>
+              <div className="flex gap-4 text-sm">
+                <span className="text-zinc-200">
+                  <b className="text-amber-300">{visitantes.alunos}</b> alunos
+                </span>
+                <span className="text-zinc-500">
+                  <b className="text-zinc-300">{visitantes.visitantes}</b> visitantes
+                </span>
+              </div>
+            </div>
+          )}
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-3.5">
             <p className="text-[11px] text-zinc-500 mb-1">Caixa atual</p>
             <p className="font-display text-2xl font-bold text-amber-300">{brl(saldo)}</p>

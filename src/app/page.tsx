@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import InstallPrompt from "@/components/InstallPrompt";
+import VisitorGate from "@/components/VisitorGate";
 import { getAnonId } from "@/lib/anonId";
 
 export default function PublicPage() {
@@ -16,6 +17,7 @@ export default function PublicPage() {
 
   return (
     <div className="h-screen w-full flex flex-col">
+      <VisitorGate />
       <div className="flex-1 min-h-0 relative">
         <ChatPanel
           mode="publica"

@@ -6,6 +6,7 @@ import {
   ChevronLeft, ImagePlus, Camera, Volume2, VolumeX
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type Conversa = { id: string; titulo: string };
 type Mensagem = { id?: string; role: "user" | "assistant"; conteudo: string };
@@ -56,6 +57,15 @@ function TypingDots() {
     </div>
   );
 }
+
+const ADMIN_SHORTCUTS = [
+  "Amanhã não haverá aula",
+  "Nova prova de ",
+  "Novo evento dia ",
+  "Recebemos R$ de rifa",
+  "Gastamos R$ com ",
+  "Novo aviso: "
+];
 
 export default function ChatPanel({
   mode,
@@ -266,9 +276,12 @@ export default function ChatPanel({
             </div>
             <span className="font-display font-bold text-zinc-100 tracking-tight">{brand}</span>
           </div>
-          <button onClick={() => setCollapsed(true)} className="text-zinc-500 hover:text-zinc-200 p-1">
-            <ChevronLeft size={16} />
-          </button>
+          <div className="flex items-center gap-0.5">
+            <ThemeToggle />
+            <button onClick={() => setCollapsed(true)} className="text-zinc-500 hover:text-zinc-200 p-1">
+              <ChevronLeft size={16} />
+            </button>
+          </div>
         </div>
 
         <button
@@ -434,6 +447,22 @@ export default function ChatPanel({
         </div>
 
         <div className="max-w-2xl w-full mx-auto p-4">
+          {mode === "admin" && (
+            <div className="flex gap-1.5 mb-2 overflow-x-auto pb-1">
+              {ADMIN_SHORTCUTS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => {
+                    setInput(s);
+                    taRef.current?.focus();
+                  }}
+                  className="shrink-0 text-xs px-2.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-amber-300 hover:border-amber-500/40 transition-colors whitespace-nowrap"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
           {pendingImage && (
             <div className="flex items-center gap-2 mb-2 text-xs text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 w-fit">
               <Camera size={12} /> {pendingImage.name}
@@ -475,7 +504,10 @@ export default function ChatPanel({
           </div>
           {mode === "publica" && (
             <p className="text-center text-[11px] text-zinc-600 mt-2">
-              José+ pode cometer erros. Confirme informações importantes com a coordenação.
+              José+ pode cometer erros. Confirme informações importantes com a coordenação. ·{" "}
+              <a href="/sobre" className="underline hover:text-amber-400 transition-colors">
+                Sobre o José+
+              </a>
             </p>
           )}
         </div>

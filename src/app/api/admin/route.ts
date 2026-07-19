@@ -78,6 +78,16 @@ export async function POST(req: NextRequest) {
         applied = true;
       }
 
+      if (
+        parsed.acao === "criar_lote" &&
+        Array.isArray(parsed.dadosLote) &&
+        parsed.dadosLote.length > 0
+      ) {
+        const { error } = await supabaseAdmin.from(table).insert(parsed.dadosLote);
+        if (error) throw error;
+        applied = true;
+      }
+
       if (parsed.acao === "atualizar" && parsed.registro_id && parsed.dados) {
         const { error } = await supabaseAdmin
           .from(table)
