@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Plus, MessageSquare, Send, Trash2, Pencil, Check, X, Loader2,
-  ChevronLeft, ImagePlus, Camera
+  ChevronLeft, ImagePlus, Camera, Volume2, VolumeX
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 
@@ -78,6 +78,7 @@ export default function ChatPanel({
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameVal, setRenameVal] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [pendingImage, setPendingImage] = useState<{ b64: string; mime: string; name: string } | null>(
     null
   );
@@ -216,6 +217,24 @@ export default function ChatPanel({
     } finally {
       setLoading(false);
     }
+  }
+
+  function toggleSpeak(text: string, index: number) {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    if (speakingIndex === index) {
+      window.speechSynthesis.cancel();
+      setSpeakingIndex(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "pt-BR";
+    utterance.onend = () => setSpeakingIndex(null);
+    utterance.onerror = () => setSpeakingIndex(null);
+    window.speechSynthesis.speak(utterance);
+    setSpeakingIndex(index);
   }
 
   function handleKey(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -381,14 +400,26 @@ export default function ChatPanel({
               {mensagens.map((m, i) => (
                 <div key={i} className={`flex gap-3 animate-fade-in ${m.role === "user" ? "flex-row-reverse" : ""}`}>
                   <Avatar isUser={m.role === "user"} />
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed whitespace-pre-wrap ${
-                      m.role === "user"
-                        ? "bg-zinc-800 text-zinc-100 rounded-tr-sm"
-                        : "bg-zinc-900/70 border border-zinc-800 text-zinc-200 rounded-tl-sm"
-                    }`}
-                  >
-                    {m.conteudo}
+                  <div className={`flex flex-col gap-1 ${m.role === "user" ? "items-end" : "items-start"}`}>
+                    <div
+                      className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed whitespace-pre-wrap ${
+                        m.role === "user"
+                          ? "bg-zinc-800 text-zinc-100 rounded-tr-sm"
+                          : "bg-zinc-900/70 border border-zinc-800 text-zinc-200 rounded-tl-sm"
+                      }`}
+                    >
+                      {m.conteudo}
+                    </div>
+                    {m.role === "assistant" && (
+                      <button
+                        onClick={() => toggleSpeak(m.conteudo, i)}
+                        className="flex items-center gap-1 text-[11px] text-zinc-600 hover:text-amber-400 transition-colors px-1"
+                        title={speakingIndex === i ? "Parar" : "Ouvir"}
+                      >
+                        {speakingIndex === i ? <VolumeX size={12} /> : <Volume2 size={12} />}
+                        {speakingIndex === i ? "Parar" : "Ouvir"}
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
