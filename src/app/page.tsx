@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ChatPanel from "@/components/ChatPanel";
 import InstallPrompt from "@/components/InstallPrompt";
 import VisitorGate from "@/components/VisitorGate";
+import ExamGreeting from "@/components/ExamGreeting";
 import { getAnonId } from "@/lib/anonId";
 
 export default function PublicPage() {
@@ -34,6 +35,7 @@ export default function PublicPage() {
           apiEndpoint="/api/chat"
         />
         <InstallPrompt />
+        <ExamGreeting />
       </div>
     </div>
   );

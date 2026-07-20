@@ -95,6 +95,12 @@ create table if not exists mensagens (
   criado_em timestamptz not null default now()
 );
 
+create table if not exists visitantes (
+  id uuid primary key default gen_random_uuid(),
+  tipo text not null check (tipo in ('aluno', 'visitante')),
+  criado_em timestamptz not null default now()
+);
+
 -- ============================================================
 -- Row Level Security
 -- Regra geral: qualquer pessoa pode LER os módulos escolares
@@ -114,6 +120,7 @@ alter table caixa_lancamentos enable row level security;
 alter table metas enable row level security;
 alter table conversas enable row level security;
 alter table mensagens enable row level security;
+alter table visitantes enable row level security;
 
 create policy "leitura publica avisos" on avisos for select using (true);
 create policy "leitura publica eventos" on eventos for select using (true);
@@ -133,6 +140,9 @@ create policy "delete conversas" on conversas for delete using (true);
 
 create policy "leitura mensagens" on mensagens for select using (true);
 create policy "escrita mensagens" on mensagens for insert with check (true);
+
+create policy "leitura visitantes" on visitantes for select using (true);
+create policy "escrita visitantes" on visitantes for insert with check (true);
 
 -- Nenhuma policy de insert/update/delete é criada para os módulos
 -- escolares: isso significa que só a service_role key (usada nas

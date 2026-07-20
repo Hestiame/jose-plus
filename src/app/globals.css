@@ -36,6 +36,35 @@ body {
   animation: fadeIn 0.25s ease;
 }
 
+@keyframes cameraFlash {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.animate-camera-flash {
+  animation: cameraFlash 0.5s ease-out forwards;
+}
+
+@keyframes cardDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-card-drop {
+  animation: cardDrop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 /* ============================================================
    Tema claro — ativado adicionando a classe "light" na <html>.
    É uma sobreposição global (não exige trocar classe por classe

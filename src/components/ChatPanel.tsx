@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 import ThemeToggle from "@/components/ThemeToggle";
+import FlashcardButton from "@/components/FlashcardButton";
 
 type Conversa = { id: string; titulo: string };
 type Mensagem = { id?: string; role: "user" | "assistant"; conteudo: string };
@@ -472,6 +473,7 @@ export default function ChatPanel({
             </div>
           )}
           <div className="border border-zinc-800 bg-zinc-900/80 backdrop-blur rounded-2xl p-2 flex items-end gap-2 shadow-xl shadow-black/20">
+            {mode === "publica" && <FlashcardButton />}
             {allowImage && (
               <label
                 className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-zinc-400 hover:text-amber-400 hover:bg-zinc-800 cursor-pointer transition-colors"
