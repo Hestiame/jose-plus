@@ -6,14 +6,13 @@ type MascotProps = {
   bounce?: boolean;
 };
 
-export default function Mascot({ size = 96, className = "", bounce = false }: MascotProps) {
+export default function Mascot({ size, className = "", bounce = false }: MascotProps) {
   return (
     <svg
-      width={size}
-      height={size}
+      {...(size ? { width: size, height: size } : {})}
       viewBox="0 0 200 200"
       xmlns="http://www.w3.org/2000/svg"
-      className={`${bounce ? "animate-bounce" : ""} ${className}`}
+      className={`${bounce ? "animate-bounce" : ""} ${!size ? "w-full h-auto" : ""} ${className}`}
     >
       <defs>
         <linearGradient id="mascotBodyGrad" x1="0" y1="0" x2="0" y2="1">
