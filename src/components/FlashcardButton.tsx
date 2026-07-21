@@ -41,24 +41,27 @@ export default function FlashcardButton() {
       </button>
 
       {open && (
-        <div className="absolute bottom-11 left-0 w-64 bg-zinc-900 border border-zinc-800 rounded-xl p-2 shadow-xl shadow-black/30 z-50">
-          <p className="text-[11px] text-zinc-500 px-2 pb-1.5">Revisar pra qual prova?</p>
-          {provas.length === 0 && (
-            <p className="text-xs text-zinc-600 px-2 py-2">Nenhuma prova com conteúdo cadastrado ainda.</p>
-          )}
-          {provas.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => {
-                setActive(p);
-                setOpen(false);
-              }}
-              className="w-full text-left text-sm text-zinc-300 hover:bg-zinc-800 rounded-lg px-2.5 py-2 transition-colors"
-            >
-              {p.materia}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute bottom-14 left-0 w-64 bg-zinc-900 border border-zinc-700 rounded-xl p-2 shadow-2xl shadow-black/50 z-50 animate-fade-in">
+            <p className="text-[11px] text-zinc-500 px-2 pb-1.5">Revisar pra qual prova?</p>
+            {provas.length === 0 && (
+              <p className="text-xs text-zinc-600 px-2 py-2">Nenhuma prova com conteúdo cadastrado ainda.</p>
+            )}
+            {provas.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => {
+                  setActive(p);
+                  setOpen(false);
+                }}
+                className="w-full text-left text-sm text-zinc-300 hover:bg-zinc-800 rounded-lg px-2.5 py-2 transition-colors"
+              >
+                {p.materia}
+              </button>
+            ))}
+          </div>
+        </>
       )}
 
       {active && (
