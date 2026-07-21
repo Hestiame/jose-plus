@@ -8,6 +8,7 @@ import {
 import { supabaseBrowser } from "@/lib/supabaseClient";
 import ThemeToggle from "@/components/ThemeToggle";
 import FlashcardButton from "@/components/FlashcardButton";
+import MascotReaction, { ReactionType } from "@/components/MascotReaction";
 
 type Conversa = { id: string; titulo: string };
 type Mensagem = { id?: string; role: "user" | "assistant"; conteudo: string };
@@ -90,6 +91,7 @@ export default function ChatPanel({
   const [renameVal, setRenameVal] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+  const [reaction, setReaction] = useState<{ tipo: ReactionType; quadro?: string | null } | null>(null);
   const [pendingImage, setPendingImage] = useState<{ b64: string; mime: string; name: string } | null>(
     null
   );
@@ -219,6 +221,10 @@ export default function ChatPanel({
       await supabaseBrowser
         .from("mensagens")
         .insert({ conversa_id: convId, role: "assistant", conteudo: reply });
+
+      if (mode === "publica" && data.reacao && data.reacao !== "normal") {
+        setReaction({ tipo: data.reacao as ReactionType, quadro: data.quadro });
+      }
 
       if (data.applied && onDataChanged) onDataChanged();
     } catch {
@@ -514,6 +520,10 @@ export default function ChatPanel({
           )}
         </div>
       </div>
+
+      {mode === "publica" && reaction && (
+        <MascotReaction tipo={reaction.tipo} quadro={reaction.quadro} onDone={() => setReaction(null)} />
+      )}
     </div>
   );
 }

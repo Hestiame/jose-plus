@@ -4,6 +4,10 @@ import { buildPublicSystem } from "@/lib/prompts";
 import { callAI } from "@/lib/aiProvider";
 import { ChatMessage } from "@/lib/types";
 
+function stripJsonFence(text: string) {
+  return text.replace(/```json/gi, "").replace(/```/g, "").trim();
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { messages } = (await req.json()) as { messages: ChatMessage[] };
@@ -12,9 +16,19 @@ export async function POST(req: NextRequest) {
     }
 
     const schoolData = await fetchSchoolData();
-    const { text } = await callAI({ system: buildPublicSystem(schoolData), messages });
+    const { text } = await callAI({ system: buildPublicSystem(schoolData), messages, jsonMode: true });
 
-    return NextResponse.json({ reply: text || "Não consegui responder agora, tenta de novo?" });
+    try {
+      const parsed = JSON.parse(stripJsonFence(text));
+      return NextResponse.json({
+        reply: parsed.resposta || "Não consegui responder agora, tenta de novo?",
+        reacao: parsed.reacao || "normal",
+        quadro: parsed.quadro || null
+      });
+    } catch {
+      // se por algum motivo não veio JSON válido, ainda mostra o texto puro pro aluno
+      return NextResponse.json({ reply: text || "Não consegui responder agora, tenta de novo?", reacao: "normal" });
+    }
   } catch (err) {
     console.error("Erro no /api/chat:", err);
     return NextResponse.json(

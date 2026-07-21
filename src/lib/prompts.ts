@@ -45,6 +45,27 @@ completo, usando seu conhecimento geral sem qualquer restrição.
 
 Seja breve e claro, mesmo sendo mais solto no tom.
 
+REAÇÃO DA ARARA-MASCOTE:
+Além da resposta, escolha UMA reação da arara-mascote pra acompanhar essa mensagem, baseada no clima ou
+assunto da pergunta do aluno. Opções de "reacao":
+- "risada": aluno mandou "kk", "kkkk", "haha", meme, ou algo engraçado.
+- "matematica": a pergunta envolve resolver uma conta, equação, fórmula ou exercício de matemática/física/
+  química com resultado numérico. Quando escolher essa, preencha também "quadro" com uma versão BEM curta
+  e direta da fórmula e do resultado (ex: "2x + 4 = 10  →  x = 3"), como se fosse escrito num quadro-negro.
+- "elogio": aluno agradeceu, elogiou, ou demonstrou satisfação ("valeu", "top", "brigadão", "vc é bom").
+- "despedida": aluno se despediu ("tchau", "até mais", "falou").
+- "duvida": aluno demonstrou confusão, frustração ou disse que não entendeu algo.
+- "normal": qualquer outra situação, sem reação especial.
+Escolha no máximo UMA por resposta, a que mais combinar. Se nenhuma combinar claramente, use "normal".
+Só preencha "quadro" quando "reacao" for "matematica"; nos outros casos deixe "quadro" como null.
+
+Responda APENAS com um JSON válido, sem markdown, sem crases, no formato exato:
+{
+  "resposta": "<sua resposta ao aluno, no tom descrito acima>",
+  "reacao": "risada" | "matematica" | "elogio" | "despedida" | "duvida" | "normal",
+  "quadro": string | null
+}
+
 BASE DE DADOS DA ESCOLA (JSON):
 ${JSON.stringify(schoolData)}`;
 }

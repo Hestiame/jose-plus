@@ -53,12 +53,16 @@ export default function FlashcardModal({ materia, conteudo, onClose }: Flashcard
   }
 
   return (
-    <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <button onClick={onClose} className="absolute top-4 right-4 text-zinc-400 hover:text-white">
-        <X size={22} />
+    <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm overflow-y-auto">
+      <button
+        onClick={onClose}
+        className="fixed top-4 right-4 z-[71] text-zinc-400 hover:text-white bg-zinc-900/60 rounded-full p-1.5"
+      >
+        <X size={20} />
       </button>
 
-      <div className="w-full max-w-sm flex flex-col items-center">
+      <div className="min-h-full flex items-center justify-center p-4 py-8">
+        <div className="w-full max-w-sm flex flex-col items-center">
         {phase === "flash" && (
           <div className="relative flex flex-col items-center">
             <Mascot size={110} bounce />
@@ -93,7 +97,7 @@ export default function FlashcardModal({ materia, conteudo, onClose }: Flashcard
 
             <div
               onClick={() => setFlipped((f) => !f)}
-              className="relative w-full aspect-[4/3] cursor-pointer select-none"
+              className="relative w-full aspect-[5/4] cursor-pointer select-none"
               style={{ perspective: "1000px" }}
             >
               <div
@@ -147,6 +151,7 @@ export default function FlashcardModal({ materia, conteudo, onClose }: Flashcard
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
