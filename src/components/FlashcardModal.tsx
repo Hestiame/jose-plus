@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight, RotateCw, Loader2 } from "lucide-react";
 import Mascot from "@/components/Mascot";
 
@@ -17,6 +18,11 @@ export default function FlashcardModal({ materia, conteudo, onClose }: Flashcard
   const [cards, setCards] = useState<Card[]>([]);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // fase 1: flash da câmera (rápido, só efeito visual)
@@ -52,7 +58,9 @@ export default function FlashcardModal({ materia, conteudo, onClose }: Flashcard
     setIndex((i) => Math.max(i - 1, 0));
   }
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <div className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm overflow-y-auto">
       <button
         onClick={onClose}
@@ -153,6 +161,7 @@ export default function FlashcardModal({ materia, conteudo, onClose }: Flashcard
         )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
