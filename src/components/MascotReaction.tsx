@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Mascot from "@/components/Mascot";
 
 export type ReactionType = "risada" | "matematica" | "elogio" | "despedida" | "duvida" | "normal";
@@ -12,73 +12,75 @@ type MascotReactionProps = {
 };
 
 const DURATIONS: Record<ReactionType, number> = {
-  risada: 2400,
-  matematica: 4200,
-  elogio: 2800,
-  despedida: 2200,
-  duvida: 2400,
+  risada: 2800,
+  matematica: 4500,
+  elogio: 3000,
+  despedida: 2600,
+  duvida: 2600,
   normal: 0
 };
 
 export default function MascotReaction({ tipo, quadro, onDone }: MascotReactionProps) {
+  const [landed, setLanded] = useState(false);
+
   useEffect(() => {
     if (tipo === "normal") return;
-    const t = setTimeout(onDone, DURATIONS[tipo]);
-    return () => clearTimeout(t);
+    setLanded(false);
+    const landTimer = setTimeout(() => setLanded(true), 900);
+    const doneTimer = setTimeout(onDone, DURATIONS[tipo]);
+    return () => {
+      clearTimeout(landTimer);
+      clearTimeout(doneTimer);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tipo]);
 
   if (tipo === "normal") return null;
 
+  let mascotAnim = "animate-fly-in";
+  if (landed) {
+    mascotAnim = tipo === "despedida" ? "animate-fly-out" : "animate-mascot-idle";
+    if (landed && tipo === "risada") mascotAnim += " animate-wiggle";
+  }
+
   return (
-    <div className="fixed bottom-24 left-3 z-40 pointer-events-none select-none">
-      {tipo === "risada" && (
-        <div className="flex items-end gap-1.5 animate-wiggle">
-          <div className="w-14 h-14">
-            <Mascot bounce />
-          </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl rounded-bl-sm px-2.5 py-1 text-sm mb-2 animate-fade-in">
-            kkkkk 😂
-          </div>
+    <div className="fixed inset-x-0 bottom-28 z-40 flex flex-col items-center pointer-events-none px-4">
+      <div className={`w-32 h-32 sm:w-36 sm:h-36 ${mascotAnim}`}>
+        <Mascot />
+      </div>
+
+      {landed && tipo === "risada" && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-2 text-base -mt-2 animate-fade-in shadow-xl shadow-black/30">
+          kkkkk 😂
         </div>
       )}
 
-      {tipo === "matematica" && (
-        <div className="flex items-end gap-2 animate-card-drop">
-          <div className="w-12 h-12 shrink-0">
-            <Mascot />
-          </div>
-          <div className="bg-zinc-950 border-4 border-[#5c3a21] rounded-lg px-3 py-2.5 shadow-xl shadow-black/40 mb-1 max-w-[220px]">
-            <p
-              className="text-white text-sm leading-snug"
-              style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
-            >
-              {quadro || "calculando..."}
-            </p>
-          </div>
+      {landed && tipo === "matematica" && (
+        <div className="bg-zinc-950 border-4 border-[#5c3a21] rounded-xl px-5 py-4 shadow-2xl shadow-black/50 -mt-3 max-w-[280px] animate-card-drop">
+          <p
+            className="text-white text-lg leading-snug text-center"
+            style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
+          >
+            {quadro || "calculando..."}
+          </p>
         </div>
       )}
 
-      {tipo === "elogio" && (
-        <div className="relative w-16 h-16 animate-bounce">
-          <Mascot />
-          <span className="absolute -top-2 -right-1 text-lg">🎉</span>
+      {landed && tipo === "elogio" && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-2 text-base -mt-2 animate-fade-in shadow-xl shadow-black/30">
+          🎉 Isaa! 🎉
         </div>
       )}
 
-      {tipo === "despedida" && (
-        <div className="flex items-center gap-1.5 animate-fly-out">
-          <div className="w-14 h-14">
-            <Mascot />
-          </div>
-          <span className="text-lg mb-1">👋</span>
+      {landed && tipo === "despedida" && (
+        <div className="bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-2 text-base -mt-2 animate-fade-in shadow-xl shadow-black/30">
+          até mais! 👋
         </div>
       )}
 
-      {tipo === "duvida" && (
-        <div className="relative w-14 h-14 animate-fade-in">
-          <Mascot />
-          <span className="absolute -top-3 -right-2 text-xl animate-bounce">❓</span>
+      {landed && tipo === "duvida" && (
+        <div className="relative bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-2 text-base -mt-2 animate-fade-in shadow-xl shadow-black/30">
+          hmm... 🤔
         </div>
       )}
     </div>
