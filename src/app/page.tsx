@@ -33,6 +33,7 @@ export default function PublicPage() {
             "Me explica frações"
           ]}
           apiEndpoint="/api/chat"
+          allowImage
         />
         <InstallPrompt />
         <ExamGreeting />

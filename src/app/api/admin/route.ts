@@ -102,6 +102,16 @@ export async function POST(req: NextRequest) {
         if (error) throw error;
         applied = true;
       }
+
+      if (
+        parsed.acao === "excluir_lote" &&
+        Array.isArray(parsed.registro_ids) &&
+        parsed.registro_ids.length > 0
+      ) {
+        const { error } = await supabaseAdmin.from(table).delete().in("id", parsed.registro_ids);
+        if (error) throw error;
+        applied = true;
+      }
     }
 
     return NextResponse.json({

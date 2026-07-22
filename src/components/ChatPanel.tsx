@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Plus, MessageSquare, Send, Trash2, Pencil, Check, X, Loader2,
-  ChevronLeft, ImagePlus, Camera, Volume2, VolumeX
+  ChevronLeft, ImagePlus, Camera, Volume2, VolumeX, Mic, MicOff
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -26,12 +26,36 @@ type ChatPanelProps = {
   onDataChanged?: () => void;
 };
 
-function fileToBase64(file: File): Promise<string> {
+function compressImage(file: File, maxDim = 1280, quality = 0.72): Promise<{ base64: string; mime: string }> {
   return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve((r.result as string).split(",")[1]);
-    r.onerror = reject;
-    r.readAsDataURL(file);
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return reject(new Error("Canvas não suportado"));
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve({ base64: dataUrl.split(",")[1], mime: "image/jpeg" });
+      };
+      img.onerror = reject;
+      img.src = reader.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
 
@@ -92,6 +116,45 @@ export default function ChatPanel({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const [reaction, setReaction] = useState<{ tipo: ReactionType; quadro?: string | null } | null>(null);
+  const [listening, setListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    setSpeechSupported(!!SpeechRecognition);
+  }, []);
+
+  function toggleListening() {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "pt-BR";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+
+    recognition.onresult = (event: any) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setInput(transcript);
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setListening(true);
+  }
   const [pendingImage, setPendingImage] = useState<{ b64: string; mime: string; name: string } | null>(
     null
   );
@@ -169,8 +232,16 @@ export default function ChatPanel({
   async function onImagePick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const b64 = await fileToBase64(file);
-    setPendingImage({ b64, mime: file.type, name: file.name });
+    try {
+      const { base64, mime } = await compressImage(file);
+      setPendingImage({ b64: base64, mime, name: file.name });
+    } catch {
+      // se a compressão falhar por algum motivo, tenta o arquivo original mesmo assim
+      const reader = new FileReader();
+      reader.onload = () =>
+        setPendingImage({ b64: (reader.result as string).split(",")[1], mime: file.type, name: file.name });
+      reader.readAsDataURL(file);
+    }
   }
 
   async function send(textArg?: string) {
@@ -488,6 +559,19 @@ export default function ChatPanel({
                 <ImagePlus size={18} />
                 <input type="file" accept="image/*" className="hidden" onChange={onImagePick} />
               </label>
+            )}
+            {speechSupported && (
+              <button
+                onClick={toggleListening}
+                title={listening ? "Parar gravação" : "Falar em vez de digitar"}
+                className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                  listening
+                    ? "text-rose-400 bg-rose-500/10 animate-pulse"
+                    : "text-zinc-400 hover:text-amber-400 hover:bg-zinc-800"
+                }`}
+              >
+                {listening ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
             )}
             <textarea
               ref={taRef}

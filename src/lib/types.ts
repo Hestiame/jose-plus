@@ -26,7 +26,7 @@ export type SchoolData = {
 };
 
 export type AdminAction = {
-  acao: "criar" | "criar_lote" | "atualizar" | "excluir" | "consultar" | "conversar";
+  acao: "criar" | "criar_lote" | "atualizar" | "excluir" | "excluir_lote" | "consultar" | "conversar";
   modulo:
     | "avisos"
     | "eventos"
@@ -39,6 +39,7 @@ export type AdminAction = {
     | "metas"
     | null;
   registro_id: string | null; // id existente, quando for atualizar/excluir
+  registro_ids: string[] | null; // vários ids do MESMO módulo, quando for "excluir_lote"
   dados: Record<string, unknown> | null; // campos do registro a criar/atualizar (ação "criar")
   dadosLote: Record<string, unknown>[] | null; // vários registros do MESMO módulo de uma vez (ação "criar_lote")
   resposta: string;

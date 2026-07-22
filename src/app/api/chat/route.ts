@@ -10,13 +10,23 @@ function stripJsonFence(text: string) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = (await req.json()) as { messages: ChatMessage[] };
+    const { messages, imageBase64, imageMimeType } = (await req.json()) as {
+      messages: ChatMessage[];
+      imageBase64?: string;
+      imageMimeType?: string;
+    };
     if (!Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json({ error: "messages é obrigatório" }, { status: 400 });
     }
 
     const schoolData = await fetchSchoolData();
-    const { text } = await callAI({ system: buildPublicSystem(schoolData), messages, jsonMode: true });
+    const { text } = await callAI({
+      system: buildPublicSystem(schoolData),
+      messages,
+      imageBase64,
+      imageMimeType,
+      jsonMode: true
+    });
 
     try {
       const parsed = JSON.parse(stripJsonFence(text));
