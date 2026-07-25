@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { SchoolData } from "./types";
+import { fetchFeriados } from "./feriados";
 
 // Cliente usado SOMENTE dentro das API routes (roda no servidor).
 // A service_role key ignora RLS, então é ela quem tem permissão de
@@ -11,19 +12,31 @@ export const supabaseAdmin = createClient(
 );
 
 export async function fetchSchoolData(): Promise<SchoolData> {
-  const [avisos, eventos, provas, trabalhos, merenda, documentos, galeria, lancamentos, metas, conteudoAulas] =
-    await Promise.all([
-      supabaseAdmin.from("avisos").select("*").order("data", { ascending: false }).limit(30),
-      supabaseAdmin.from("eventos").select("*").order("data", { ascending: true }).limit(30),
-      supabaseAdmin.from("provas").select("*").order("data", { ascending: true }).limit(30),
-      supabaseAdmin.from("trabalhos").select("*").order("entrega", { ascending: true }).limit(30),
-      supabaseAdmin.from("merenda").select("*").order("data", { ascending: false }).limit(14),
-      supabaseAdmin.from("documentos").select("*").order("criado_em", { ascending: false }).limit(30),
-      supabaseAdmin.from("galeria").select("*").order("criado_em", { ascending: false }).limit(30),
-      supabaseAdmin.from("caixa_lancamentos").select("*").order("data", { ascending: false }).limit(100),
-      supabaseAdmin.from("metas").select("*"),
-      supabaseAdmin.from("conteudo_aulas").select("*").order("data", { ascending: false }).limit(30)
-    ]);
+  const [
+    avisos,
+    eventos,
+    provas,
+    trabalhos,
+    merenda,
+    documentos,
+    galeria,
+    lancamentos,
+    metas,
+    conteudoAulas,
+    feriados
+  ] = await Promise.all([
+    supabaseAdmin.from("avisos").select("*").order("data", { ascending: false }).limit(30),
+    supabaseAdmin.from("eventos").select("*").order("data", { ascending: true }).limit(30),
+    supabaseAdmin.from("provas").select("*").order("data", { ascending: true }).limit(30),
+    supabaseAdmin.from("trabalhos").select("*").order("entrega", { ascending: true }).limit(30),
+    supabaseAdmin.from("merenda").select("*").order("data", { ascending: false }).limit(14),
+    supabaseAdmin.from("documentos").select("*").order("criado_em", { ascending: false }).limit(30),
+    supabaseAdmin.from("galeria").select("*").order("criado_em", { ascending: false }).limit(30),
+    supabaseAdmin.from("caixa_lancamentos").select("*").order("data", { ascending: false }).limit(100),
+    supabaseAdmin.from("metas").select("*"),
+    supabaseAdmin.from("conteudo_aulas").select("*").order("data", { ascending: false }).limit(30),
+    fetchFeriados()
+  ]);
 
   const lancamentosData = lancamentos.data || [];
   const saldo = lancamentosData.reduce(
@@ -47,6 +60,7 @@ export async function fetchSchoolData(): Promise<SchoolData> {
     documentos: documentos.data || [],
     galeria: galeria.data || [],
     conteudoAulas: conteudoAulas.data || [],
+    feriados,
     caixa: {
       saldo,
       lancamentos: lancamentosData,

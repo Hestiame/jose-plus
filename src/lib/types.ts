@@ -12,6 +12,7 @@ export type SchoolData = {
   documentos: { id: string; nome: string; tipo: string | null; url: string | null }[];
   galeria: { id: string; descricao: string | null; url: string | null }[];
   conteudoAulas: { id: string; data: string; materia: string | null; resumo: string }[];
+  feriados: { data: string; nome: string }[];
   caixa: {
     saldo: number;
     lancamentos: {
