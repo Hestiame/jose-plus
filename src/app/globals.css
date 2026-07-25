@@ -178,3 +178,44 @@ html.light .text-zinc-600 {
 html.light ::-webkit-scrollbar-thumb {
   background: #d4d4d8;
 }
+
+/* ============================================================
+   Alto contraste — ativado adicionando a classe "contraste" na <html>.
+   Preto/branco puros, bordas mais fortes, foco bem visível.
+   ============================================================ */
+html.contraste body {
+  background-color: #000000;
+  color: #ffffff;
+}
+html.contraste .bg-zinc-950,
+html.contraste .bg-zinc-900,
+html.contraste .bg-zinc-900\/60,
+html.contraste .bg-zinc-900\/70,
+html.contraste .bg-zinc-900\/80,
+html.contraste .bg-zinc-800,
+html.contraste .bg-zinc-800\/70,
+html.contraste .bg-zinc-800\/80 {
+  background-color: #000000 !important;
+}
+html.contraste .border-zinc-800,
+html.contraste .border-zinc-700 {
+  border-color: #ffffff !important;
+  border-width: 2px !important;
+}
+html.contraste .text-zinc-100,
+html.contraste .text-zinc-200,
+html.contraste .text-zinc-300 {
+  color: #ffffff !important;
+}
+html.contraste .text-zinc-400,
+html.contraste .text-zinc-500,
+html.contraste .text-zinc-600 {
+  color: #e5e5e5 !important;
+}
+html.contraste button:focus-visible,
+html.contraste a:focus-visible,
+html.contraste input:focus-visible,
+html.contraste textarea:focus-visible {
+  outline: 3px solid #fbbf24 !important;
+  outline-offset: 2px;
+}

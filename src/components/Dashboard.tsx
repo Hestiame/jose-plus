@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, FolderOpen, TrendingUp, TrendingDown, Target,
-  Megaphone, CalendarDays, ClipboardList, GraduationCap, UtensilsCrossed, Images, Users
+  Megaphone, CalendarDays, ClipboardList, GraduationCap, UtensilsCrossed, Images, Users, BookOpen
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 
@@ -16,6 +16,7 @@ const MODULOS = [
   { key: "provas", label: "Provas", icon: ClipboardList, color: "text-rose-400", campo: "materia" },
   { key: "trabalhos", label: "Trabalhos", icon: GraduationCap, color: "text-indigo-400", campo: "titulo" },
   { key: "merenda", label: "Merenda", icon: UtensilsCrossed, color: "text-lime-400", campo: "itens" },
+  { key: "conteudo_aulas", label: "Conteúdo das aulas", icon: BookOpen, color: "text-cyan-400", campo: "resumo" },
   { key: "galeria", label: "Galeria", icon: Images, color: "text-fuchsia-400", campo: "descricao" }
 ] as const;
 

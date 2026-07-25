@@ -11,6 +11,7 @@ export type SchoolData = {
   merenda: { id: string; data: string; itens: string[] }[];
   documentos: { id: string; nome: string; tipo: string | null; url: string | null }[];
   galeria: { id: string; descricao: string | null; url: string | null }[];
+  conteudoAulas: { id: string; data: string; materia: string | null; resumo: string }[];
   caixa: {
     saldo: number;
     lancamentos: {
@@ -37,6 +38,7 @@ export type AdminAction = {
     | "galeria"
     | "caixa_lancamento"
     | "metas"
+    | "conteudo_aula"
     | null;
   registro_id: string | null; // id existente, quando for atualizar/excluir
   registro_ids: string[] | null; // vários ids do MESMO módulo, quando for "excluir_lote"

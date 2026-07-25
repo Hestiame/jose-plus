@@ -11,7 +11,7 @@ export const supabaseAdmin = createClient(
 );
 
 export async function fetchSchoolData(): Promise<SchoolData> {
-  const [avisos, eventos, provas, trabalhos, merenda, documentos, galeria, lancamentos, metas] =
+  const [avisos, eventos, provas, trabalhos, merenda, documentos, galeria, lancamentos, metas, conteudoAulas] =
     await Promise.all([
       supabaseAdmin.from("avisos").select("*").order("data", { ascending: false }).limit(30),
       supabaseAdmin.from("eventos").select("*").order("data", { ascending: true }).limit(30),
@@ -21,7 +21,8 @@ export async function fetchSchoolData(): Promise<SchoolData> {
       supabaseAdmin.from("documentos").select("*").order("criado_em", { ascending: false }).limit(30),
       supabaseAdmin.from("galeria").select("*").order("criado_em", { ascending: false }).limit(30),
       supabaseAdmin.from("caixa_lancamentos").select("*").order("data", { ascending: false }).limit(100),
-      supabaseAdmin.from("metas").select("*")
+      supabaseAdmin.from("metas").select("*"),
+      supabaseAdmin.from("conteudo_aulas").select("*").order("data", { ascending: false }).limit(30)
     ]);
 
   const lancamentosData = lancamentos.data || [];
@@ -45,6 +46,7 @@ export async function fetchSchoolData(): Promise<SchoolData> {
     merenda: merenda.data || [],
     documentos: documentos.data || [],
     galeria: galeria.data || [],
+    conteudoAulas: conteudoAulas.data || [],
     caixa: {
       saldo,
       lancamentos: lancamentosData,

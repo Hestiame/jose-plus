@@ -3,11 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Plus, MessageSquare, Send, Trash2, Pencil, Check, X, Loader2,
-  ChevronLeft, ImagePlus, Camera, Volume2, VolumeX, Mic, MicOff
+  ChevronLeft, ImagePlus, Camera, Volume2, VolumeX, Mic, MicOff, Sparkles
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 import ThemeToggle from "@/components/ThemeToggle";
 import FlashcardButton from "@/components/FlashcardButton";
+import CalendarButton from "@/components/CalendarButton";
+import SuggestionBox from "@/components/SuggestionBox";
+import EmailSubscribe from "@/components/EmailSubscribe";
 import MascotReaction, { ReactionType } from "@/components/MascotReaction";
 
 type Conversa = { id: string; titulo: string };
@@ -502,14 +505,25 @@ export default function ChatPanel({
                       {m.conteudo}
                     </div>
                     {m.role === "assistant" && (
-                      <button
-                        onClick={() => toggleSpeak(m.conteudo, i)}
-                        className="flex items-center gap-1 text-[11px] text-zinc-600 hover:text-amber-400 transition-colors px-1"
-                        title={speakingIndex === i ? "Parar" : "Ouvir"}
-                      >
-                        {speakingIndex === i ? <VolumeX size={12} /> : <Volume2 size={12} />}
-                        {speakingIndex === i ? "Parar" : "Ouvir"}
-                      </button>
+                      <div className="flex items-center gap-3 px-1">
+                        <button
+                          onClick={() => toggleSpeak(m.conteudo, i)}
+                          className="flex items-center gap-1 text-[11px] text-zinc-600 hover:text-amber-400 transition-colors"
+                          title={speakingIndex === i ? "Parar" : "Ouvir"}
+                        >
+                          {speakingIndex === i ? <VolumeX size={12} /> : <Volume2 size={12} />}
+                          {speakingIndex === i ? "Parar" : "Ouvir"}
+                        </button>
+                        {mode === "publica" && i === mensagens.length - 1 && (
+                          <button
+                            onClick={() => send("Pode explicar de novo de um jeito mais simples?")}
+                            className="flex items-center gap-1 text-[11px] text-zinc-600 hover:text-amber-400 transition-colors"
+                            title="Explicar de novo, mais simples"
+                          >
+                            <Sparkles size={12} /> Explicar mais simples
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -551,6 +565,9 @@ export default function ChatPanel({
           )}
           <div className="border border-zinc-800 bg-zinc-900/80 backdrop-blur rounded-2xl p-2 flex items-end gap-2 shadow-xl shadow-black/20">
             {mode === "publica" && <FlashcardButton />}
+            {mode === "publica" && <CalendarButton />}
+            {mode === "publica" && <SuggestionBox />}
+            {mode === "publica" && <EmailSubscribe />}
             {allowImage && (
               <label
                 className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-zinc-400 hover:text-amber-400 hover:bg-zinc-800 cursor-pointer transition-colors"

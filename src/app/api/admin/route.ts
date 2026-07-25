@@ -3,6 +3,7 @@ import { supabaseAdmin, fetchSchoolData } from "@/lib/supabaseServer";
 import { buildAdminSystem } from "@/lib/prompts";
 import { callAI } from "@/lib/aiProvider";
 import { AdminAction, ChatMessage } from "@/lib/types";
+import { sendAvisoEmail } from "@/lib/resend";
 
 const TABLE_BY_MODULO: Record<string, string> = {
   avisos: "avisos",
@@ -13,7 +14,8 @@ const TABLE_BY_MODULO: Record<string, string> = {
   documentos: "documentos",
   galeria: "galeria",
   caixa_lancamento: "caixa_lancamentos",
-  metas: "metas"
+  metas: "metas",
+  conteudo_aula: "conteudo_aulas"
 };
 
 function stripJsonFence(text: string) {
@@ -76,6 +78,14 @@ export async function POST(req: NextRequest) {
         const { error } = await supabaseAdmin.from(table).insert(parsed.dados);
         if (error) throw error;
         applied = true;
+
+        if (parsed.modulo === "avisos") {
+          const { data: inscritos } = await supabaseAdmin.from("inscritos_email").select("email");
+          const emails = (inscritos || []).map((i) => i.email);
+          const texto = String(parsed.dados.texto || "");
+          const data = String(parsed.dados.data || "");
+          if (emails.length > 0) sendAvisoEmail(emails, texto, data);
+        }
       }
 
       if (

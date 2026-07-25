@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LogIn, LogOut, ShieldCheck, MessageSquareText, Users } from "lucide-react";
+import { LogIn, LogOut, ShieldCheck, MessageSquareText, Users, MessageCircleHeart } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabaseClient";
 import ChatPanel from "@/components/ChatPanel";
 import Dashboard from "@/components/Dashboard";
 import StudentChats from "@/components/StudentChats";
+import SuggestionsAdmin from "@/components/SuggestionsAdmin";
 
 export default function AdminPage() {
   const [checking, setChecking] = useState(true);
@@ -14,7 +15,7 @@ export default function AdminPage() {
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [refreshKey, setRefreshKey] = useState(0);
-  const [tab, setTab] = useState<"chat" | "alunos">("chat");
+  const [tab, setTab] = useState<"chat" | "alunos" | "sugestoes">("chat");
 
   useEffect(() => {
     supabaseBrowser.auth.getSession().then(({ data }) => {
@@ -109,6 +110,14 @@ export default function AdminPage() {
             >
               <Users size={13} /> Conversas dos alunos
             </button>
+            <button
+              onClick={() => setTab("sugestoes")}
+              className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md transition-colors ${
+                tab === "sugestoes" ? "bg-zinc-800 text-amber-300" : "text-zinc-500"
+              }`}
+            >
+              <MessageCircleHeart size={13} /> Sugestões
+            </button>
           </div>
         </div>
         <button onClick={logout} className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-rose-400 transition-colors">
@@ -135,8 +144,10 @@ export default function AdminPage() {
               getAuthHeaders={getAuthHeaders}
               onDataChanged={() => setRefreshKey((k) => k + 1)}
             />
-          ) : (
+          ) : tab === "alunos" ? (
             <StudentChats />
+          ) : (
+            <SuggestionsAdmin />
           )}
         </div>
         <Dashboard refreshKey={refreshKey} />

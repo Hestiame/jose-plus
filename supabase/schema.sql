@@ -101,6 +101,26 @@ create table if not exists visitantes (
   criado_em timestamptz not null default now()
 );
 
+create table if not exists conteudo_aulas (
+  id uuid primary key default gen_random_uuid(),
+  data date not null default current_date,
+  materia text,
+  resumo text not null,
+  criado_em timestamptz not null default now()
+);
+
+create table if not exists sugestoes (
+  id uuid primary key default gen_random_uuid(),
+  texto text not null,
+  criado_em timestamptz not null default now()
+);
+
+create table if not exists inscritos_email (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  criado_em timestamptz not null default now()
+);
+
 -- ============================================================
 -- Row Level Security
 -- Regra geral: qualquer pessoa pode LER os módulos escolares
@@ -121,6 +141,9 @@ alter table metas enable row level security;
 alter table conversas enable row level security;
 alter table mensagens enable row level security;
 alter table visitantes enable row level security;
+alter table conteudo_aulas enable row level security;
+alter table sugestoes enable row level security;
+alter table inscritos_email enable row level security;
 
 create policy "leitura publica avisos" on avisos for select using (true);
 create policy "leitura publica eventos" on eventos for select using (true);
@@ -143,6 +166,13 @@ create policy "escrita mensagens" on mensagens for insert with check (true);
 
 create policy "leitura visitantes" on visitantes for select using (true);
 create policy "escrita visitantes" on visitantes for insert with check (true);
+
+create policy "leitura publica conteudo_aulas" on conteudo_aulas for select using (true);
+
+-- sugestões: só INSERT é permitido pro navegador; leitura só via service_role (rota /api/sugestoes)
+create policy "escrita sugestoes" on sugestoes for insert with check (true);
+
+create policy "escrita inscritos_email" on inscritos_email for insert with check (true);
 
 -- Nenhuma policy de insert/update/delete é criada para os módulos
 -- escolares: isso significa que só a service_role key (usada nas
