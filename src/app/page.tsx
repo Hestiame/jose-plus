@@ -17,7 +17,7 @@ export default function PublicPage() {
   if (!anonId) return null;
 
   return (
-    <div className="h-screen w-full flex flex-col">
+    <div className="h-screen-safe w-full flex flex-col">
       <VisitorGate />
       <div className="flex-1 min-h-0 relative">
         <ChatPanel

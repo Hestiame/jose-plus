@@ -36,6 +36,19 @@ body {
   animation: fadeIn 0.25s ease;
 }
 
+/* Altura de tela "segura" pra celular: navegadores antigos usam 100vh (a
+   linha com "dvh" é simplesmente ignorada por eles, por não reconhecer a
+   unidade). Navegadores modernos usam 100dvh, que corrige a barra de
+   endereço aparecendo/sumindo e evita precisar rolar a página toda. */
+.h-screen-safe {
+  height: 100vh;
+  height: 100dvh;
+}
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 @keyframes cameraFlash {
   0% {
     opacity: 0;

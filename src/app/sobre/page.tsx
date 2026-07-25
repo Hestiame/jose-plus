@@ -18,7 +18,7 @@ const ITENS = [
 
 export default function SobrePage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 px-6 py-12">
+    <div className="min-h-screen-safe bg-zinc-950 text-zinc-100 px-6 py-12">
       <div className="max-w-xl mx-auto">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-amber-400 transition-colors mb-8">
           <ArrowLeft size={14} /> Voltar para o chat

@@ -47,7 +47,7 @@ export default function AdminPage() {
 
   if (!userId) {
     return (
-      <div className="h-screen flex items-center justify-center bg-zinc-950 px-4">
+      <div className="h-screen-safe flex items-center justify-center bg-zinc-950 px-4">
         <div className="w-full max-w-sm border border-zinc-800 rounded-2xl p-8 bg-zinc-900/60">
           <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-zinc-900 font-black text-xl mb-5">
             +
@@ -87,7 +87,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen-safe flex flex-col">
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-800 bg-zinc-950">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 text-xs text-zinc-500 mr-3">
